@@ -38,19 +38,78 @@ app.get('/posts',(req, res)=>{
         return post.apiRepr();
       })
     });
+  })
+  .catch(err => {
+    console.error(err);
+    res.status(500).json({message: 'Internal server error'});
   });
 });
-app.get('posts/:id',(req,res)=>{
+
+app.get('/posts/:id',(req,res)=>{
   Blog
-  .findByID(req.params.id)
+  .findById(req.params.id)
   .exec()
   .then(posts=>{
-    res.json(posts.apiRepr())
+    res.json(posts.apiRepr());
+  })
+  .catch(err => {
+    console.error(err);
+    res.status(500).json({message: 'Internal server error'});
   });
 });
 //POST
+app.post('/posts',(req,res)=>{
+  const bodyArr = ['title','content','firstName','lastName'];
+  bodyArr.forEach(field=>{
+    if(!(field in req.body)){
+      const message = 'No first or last name';
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  });
+  Blog.create({
+    title:req.body.title,
+    content:req.body.content,
+    author:{
+      firstName:req.body.firstName,
+      lastName:req.body.lastName
+    }
+  })
+  .then(post=>{res.status(201).json(post.apiRepr());})
+  .catch(err => {
+    console.error(err);
+    res.status(500).json({message: 'Internal server error'});
+  });
+});
 //PUT
+app.put('/posts/:id',(req,res)=>{
+  // if(req.body.id !==req.params.id){
+  //   const message = 'Id not same! RAGE';
+  //   console.error(message);
+  //   return res.status(400).send(message);   
+  // }
+  const updateThisRabbit = {};
+  const updateFields = ['title','content','firstName','lastName'];
+  updateFields.forEach(field=>{
+    if(req.body[field]){
+      return updateThisRabbit[field]= req.body[field];
+    }
+  });
+  Blog
+  .findByIdAndUpdate(req.params.id,{$set:updateThisRabbit})
+  .exec()
+  .then(hole=>{
+    res.status(204).end();
+  })
+  .catch(err => {
+    console.error(err);
+    res.status(500).json({message: 'Internal server error'});
+  });
+});
 //DELETE
+app.delete('/posts/:id',(req,res)=>{
+
+});
 let server;
 function runServer(databaseUrl=DATABASE_URL,port=PORT){
   return new Promise((resolve,reject)=>{ 

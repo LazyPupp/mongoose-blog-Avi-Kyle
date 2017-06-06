@@ -17,6 +17,7 @@ blogSchema.virtual('fullName').get(function(){
 
 blogSchema.methods.apiRepr = function(){
   return {
+    id:this.id,
     title: this.title,
     content: this.content,
     fullName: this.fullName
