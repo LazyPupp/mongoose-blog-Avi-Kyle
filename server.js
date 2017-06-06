@@ -108,7 +108,14 @@ app.put('/posts/:id',(req,res)=>{
 });
 //DELETE
 app.delete('/posts/:id',(req,res)=>{
-
+  Blog
+  .findByIdAndRemove(req.params.id)
+  .exec()
+  .then(kek=> res.status(204).end())
+  .catch(err=>{
+    console.error(err,'Send nudes');
+    res.status(500).json({message:'Internal server error'});
+  });
 });
 let server;
 function runServer(databaseUrl=DATABASE_URL,port=PORT){
