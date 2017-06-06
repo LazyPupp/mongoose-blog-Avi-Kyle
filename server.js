@@ -40,6 +40,14 @@ app.get('/posts',(req, res)=>{
     });
   });
 });
+app.get('posts/:id',(req,res)=>{
+  Blog
+  .findByID(req.params.id)
+  .exec()
+  .then(posts=>{
+    res.json(posts.apiRepr())
+  });
+});
 //POST
 //PUT
 //DELETE
